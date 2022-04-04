@@ -37,7 +37,6 @@ const getNewTilePosition = (theGrid) => {
 }
   
 const addNewTile = (grid) => {
-  
   const { row, column } = getNewTilePosition(grid);
   const newGrid = [...grid];
   newGrid[row - 1][column - 1] = 2;
@@ -148,13 +147,16 @@ const updateGridOnKeypress = (keyCode, grid) => {
   }
 }
 
+const isSameGrid = (grid1, grid2) => JSON.stringify(grid1) === JSON.stringify(grid2);
+
 const handleUserKeyPress = (event, grid, setGrid) => {
   const { key, keyCode } = event;
   const updatedGrid = updateGridOnKeypress(keyCode, grid);
-  if (updatedGrid) {
+  if (updatedGrid && !isSameGrid(grid, updatedGrid)) {
     setGrid(addNewTile(updatedGrid));
   }
 };
+
 
 const App = () => {
   const [grid, setGrid] = React.useState(cleanGrid);
