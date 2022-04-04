@@ -174,16 +174,19 @@ const App = () => {
   }, [handleUserKeyPress, grid]);
 
   return (
-    <div className="container">
-      <div className="grid">
-        {grid.map((row) => {
-          return row.map((value) => <Tile value={value} />)
-        })}
+    <div className="page">
+      <div className="container-max-width">
+        <div className="container">
+            <div className="grid">
+              {grid.map((row) => {
+                return row.map((value) => <Tile value={value} />)
+              })}
+            </div>
+        </div>
       </div>
     </div>
   )
 }
-
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
