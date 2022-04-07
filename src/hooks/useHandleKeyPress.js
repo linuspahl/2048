@@ -1,4 +1,6 @@
+import * as React from 'react'
 import addNewTile from '../utils/addNewTile';
+import { GRID_SIZE } from '../constants'
 
 const addGridProperties = (grid) => {
   return grid.map((row) => {
@@ -113,7 +115,7 @@ const handleUserKeyPress = ({ keyCode }, grid, setGrid) => {
   }
 };
 
-export const useHandleKeyPress = () => {
+export const useHandleKeyPress = (grid, setGrid) => {
   React.useEffect(() => {
     const onKeyPress = (event) => handleUserKeyPress(event, grid, setGrid);
     window.addEventListener("keydown", onKeyPress);

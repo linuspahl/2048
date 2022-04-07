@@ -1,4 +1,4 @@
-import addNewTile from './utils/addNewTile'
+import { GRID_SIZE } from "../constants";
 
 const getRandomPosition = (min = 1, max = GRID_SIZE) => {
   return Math.floor(Math.random() * (max - min) + min)
