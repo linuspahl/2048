@@ -1,5 +1,6 @@
 import * as React from 'react'
 import addNewTile from '../utils/addNewTile';
+import cloneGrid from '../utils/cloneGrid'
 import { GRID_SIZE } from '../constants'
 
 const addGridProperties = (grid) => {
@@ -55,72 +56,71 @@ const mergeToLeft = (grid) => {
   return result;
 }
 
-const updateGridOnKeypress = (keyCode, grid) => {
-  const flipMatrix = matrix => (
-    matrix[0].map((column, index) => (
-      matrix.map(row => row[index])
-    ))
-  );
+const flipMatrix = matrix => (
+  matrix[0].map((column, index) => (
+    matrix.map(row => row[index])
+  ))
+);
 
-  const rotateMatrix = matrix => (
-    flipMatrix(matrix.reverse())
-  );
+const rotateMatrix = matrix => (
+  flipMatrix(matrix.reverse())
+);
 
-  const rotateMatrixCounterClockwise = matrix => (
-    flipMatrix(matrix).reverse()
-  );
+const rotateMatrixCounterClockwise = matrix => (
+  flipMatrix(matrix).reverse()
+);
 
-  switch (keyCode) {
-    case 37: // left
-      return mergeToLeft(grid)
-    case 38: // up
-      return rotateMatrix(
-        mergeToLeft(
-          rotateMatrixCounterClockwise(
-            grid
-          )
-        )
-      );
-    case 39: // right
-      return rotateMatrixCounterClockwise(
-        rotateMatrixCounterClockwise(
-          mergeToLeft(
-            rotateMatrix(
-              rotateMatrix(
-                grid
-              )
-            )
-          )
-        )
-      );
-    case 40: // down
-      return rotateMatrixCounterClockwise(
-        mergeToLeft(
-          rotateMatrix(
-            grid
-          )
-        )
-      );
-    default:
-      break;
+const MOVE_MAPPING = {
+  'left': (grid) => mergeToLeft(grid),
+  'right': (grid) => rotateMatrixCounterClockwise(
+    rotateMatrixCounterClockwise(
+      mergeToLeft(rotateMatrix(rotateMatrix(grid)))
+    )
+  ),
+  'up': (grid) => rotateMatrix(
+    mergeToLeft(rotateMatrixCounterClockwise(grid))
+  ),
+  'down': (grid) => rotateMatrixCounterClockwise(mergeToLeft(rotateMatrix(grid)))
+}
+
+const KEY_CODE_MAPPING = {
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down',
+}
+
+const handleUserKeyPress = (keyCode, setGrid) => {
+  if (!KEY_CODE_MAPPING[keyCode]) {
+    return
   }
+
+  setGrid((grid) => {
+    const moveName = KEY_CODE_MAPPING[keyCode];
+    const moveGrid = MOVE_MAPPING[moveName];
+
+    if (!moveGrid) {
+      throw Error(`Move handler is not defined for move "${moveName}" with key code ${keyCode}.`)
+    }
+
+    const updatedGrid = moveGrid(cloneGrid(grid));
+
+    if (!isSameGrid(grid, updatedGrid)) {
+      return addNewTile(updatedGrid);
+    }
+
+    return updatedGrid;
+  })
 }
 
 const isSameGrid = (grid1, grid2) => JSON.stringify(grid1) === JSON.stringify(grid2);
 
-const handleUserKeyPress = ({ keyCode }, grid, setGrid) => {
-  const updatedGrid = updateGridOnKeypress(keyCode, grid);
-  if (updatedGrid && !isSameGrid(grid, updatedGrid)) {
-    setGrid(addNewTile(updatedGrid));
-  }
-};
-
-export const useHandleKeyPress = (grid, setGrid) => {
+export const useHandleKeyPress = (setGrid) => {
   React.useEffect(() => {
-    const onKeyPress = (event) => handleUserKeyPress(event, grid, setGrid);
+    const onKeyPress = (event) => handleUserKeyPress(event.keyCode, setGrid);
     window.addEventListener("keydown", onKeyPress);
     return () => {
       window.removeEventListener("keydown", onKeyPress);
     };
-  }, [handleUserKeyPress, grid]);
+  }, [setGrid]);
 }

@@ -13,7 +13,7 @@ const Grid = () => {
     setGrid(addNewTile(grid));
   }, [])
 
-  useHandleKeyPress(grid, setGrid)
+  useHandleKeyPress(setGrid)
   
   return (
     <div className="grid">
