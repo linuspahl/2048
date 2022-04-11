@@ -17,8 +17,8 @@ const Grid = () => {
   
   return (
     <div className="grid">
-      {grid.map((row) => {
-        return row.map((value) => <Tile value={value} />)
+      {grid.map((row, rowIndex) => {
+        return row.map((value, colIndex) => <Tile value={value} key={`${rowIndex}-${colIndex}`} />)
       })}
     </div>
   )
