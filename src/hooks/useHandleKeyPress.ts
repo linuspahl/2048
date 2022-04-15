@@ -2,14 +2,15 @@ import * as React from 'react'
 import addNewTile from '../utils/addNewTile';
 import cloneGrid from '../utils/cloneGrid'
 import { GRID_SIZE } from '../constants'
+import { GridType, GridWithProps } from '../types';
 
-const addGridProperties = (grid) => {
+const addGridProperties = (grid: GridType) => {
   return grid.map((row) => {
     return row.map((value) => ({ value, isCalculated: false }))
   })
 }
 
-const canCaptureNextCell = (grid, rowIndex, nextTargetCellIndex, curValue) => {
+const canCaptureNextCell = (grid: GridWithProps, rowIndex: number, nextTargetCellIndex: number, curValue: number) => {
   const targetCellExists = grid[rowIndex]?.[nextTargetCellIndex] !== undefined;
   const targetCellIsCalculated = grid[rowIndex][nextTargetCellIndex]?.isCalculated;
   const sameValue = grid[rowIndex][nextTargetCellIndex]?.value === curValue;
@@ -18,11 +19,11 @@ const canCaptureNextCell = (grid, rowIndex, nextTargetCellIndex, curValue) => {
   return targetCellExists && !targetCellIsCalculated && (sameValue || isNull);
 }
 
-const cellIndexIsOff = (cellIndex) => {
+const cellIndexIsOff = (cellIndex: number) => {
   return cellIndex < 0 || cellIndex >= GRID_SIZE;
 }
 
-const mergeToLeft = (grid) => {
+const mergeToLeft = (grid: GridType) => {
   const newGrid = addGridProperties(grid)
 
   const gridWithProps = addGridProperties(grid);
@@ -56,47 +57,52 @@ const mergeToLeft = (grid) => {
   return result;
 }
 
-const flipMatrix = matrix => (
+const flipMatrix = (matrix: GridType) => (
   matrix[0].map((column, index) => (
     matrix.map(row => row[index])
   ))
 );
 
-const rotateMatrix = matrix => (
+const rotateMatrix = (matrix: GridType) => (
   flipMatrix(matrix.reverse())
 );
 
-const rotateMatrixCounterClockwise = matrix => (
+const rotateMatrixCounterClockwise = (matrix: GridType) => (
   flipMatrix(matrix).reverse()
 );
 
-const MOVE_MAPPING = {
-  'left': (grid) => mergeToLeft(grid),
-  'right': (grid) => rotateMatrixCounterClockwise(
+const MOVE_MAPPING: { [key: string]: (grid: GridType) => GridType } = {
+  'left': (grid: GridType) => mergeToLeft(grid),
+  'right': (grid: GridType) => rotateMatrixCounterClockwise(
     rotateMatrixCounterClockwise(
       mergeToLeft(rotateMatrix(rotateMatrix(grid)))
     )
   ),
-  'up': (grid) => rotateMatrix(
+  'up': (grid: GridType) => rotateMatrix(
     mergeToLeft(rotateMatrixCounterClockwise(grid))
   ),
-  'down': (grid) => rotateMatrixCounterClockwise(mergeToLeft(rotateMatrix(grid)))
+  'down': (grid: GridType) => rotateMatrixCounterClockwise(mergeToLeft(rotateMatrix(grid)))
 }
 
-const KEY_CODE_MAPPING = {
+const KEY_CODE_MAPPING: { [key: number]: string | undefined } = {
   37: 'left',
   38: 'up',
   39: 'right',
   40: 'down',
 }
 
-const handleUserKeyPress = (keyCode, setGrid) => {
-  if (!KEY_CODE_MAPPING[keyCode]) {
+const handleUserKeyPress = (keyCode: number, setGrid: React.Dispatch<React.SetStateAction<GridType>>) => {
+  if (KEY_CODE_MAPPING[keyCode] === undefined) {
     return
   }
 
-  setGrid((grid) => {
+  setGrid((grid: GridType) => {
     const moveName = KEY_CODE_MAPPING[keyCode];
+
+    if (!moveName) {
+      return grid;
+    }
+
     const moveGrid = MOVE_MAPPING[moveName];
 
     if (!moveGrid) {
@@ -113,11 +119,19 @@ const handleUserKeyPress = (keyCode, setGrid) => {
   })
 }
 
-const isSameGrid = (grid1, grid2) => JSON.stringify(grid1) === JSON.stringify(grid2);
+const isSameGrid = (grid1: GridType, grid2: GridType) => JSON.stringify(grid1) === JSON.stringify(grid2);
 
-export const useHandleKeyPress = (setGrid) => {
+const isKeyboardEvent = (event: any): event is React.KeyboardEvent<HTMLElement> => {
+  return 'keyCode' in event;
+}
+
+export const useHandleKeyPress = (setGrid: React.Dispatch<React.SetStateAction<GridType>>) => {
   React.useEffect(() => {
-    const onKeyPress = (event) => handleUserKeyPress(event.keyCode, setGrid);
+    const onKeyPress = (event: Event) => {
+      if (isKeyboardEvent(event)) {
+        handleUserKeyPress(event.keyCode, setGrid)
+      }
+    };
     window.addEventListener("keydown", onKeyPress);
     return () => {
       window.removeEventListener("keydown", onKeyPress);
