@@ -1,7 +1,7 @@
 import { GRID_SIZE } from '../constants'
 import { GridType, GridWithProps, MoveDirection } from '../types';
 import addNewTile from '../utils/addNewTile';
-import cloneGrid from '../utils/cloneGrid';
+import cloneCells from './cloneCells';
 import { v4 as uuid} from 'uuid';
 
 
@@ -113,10 +113,10 @@ const moveTiles = (setGrid: React.Dispatch<React.SetStateAction<GridType>>, dire
   const moveTilesFn = MOVE_MAPPING[direction];
 
   setGrid((grid: GridType) => {
-    const updatedGrid = moveTilesFn({...grid, cells: cloneGrid(grid.cells) });
+    const updatedGrid = moveTilesFn({...grid, cells: cloneCells(grid.cells) });
 
     if (!isSameGrid(grid, updatedGrid)) {
-      return addNewTile(updatedGrid);
+      return { ...updatedGrid, cells: addNewTile(updatedGrid.cells)};
     }
 
     return updatedGrid;

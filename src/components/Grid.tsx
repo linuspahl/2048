@@ -1,19 +1,18 @@
 import './Grid.css';
-import { useState, useEffect } from 'react';
-import { CLEAN_GRID } from '../constants';
+import { useEffect } from 'react';
 import Tile from './Tile'
 import { useHandleKeyPress } from '../hooks/useHandleKeyPress';
 import useHandleSwipe from '../hooks/useHandleSwipe';
-import addNewTile from '../utils/addNewTile';
+
 import useScore from '../hooks/useScore';
 import { GridType } from '../types';
 import './Grid.css'
 import React from 'react';
+import useGrid from '../hooks/useGrid';
 
 const useUpdateScore = (grid: GridType) => {
   const { setScore } = useScore();
   const lastAdditionRef = React.useRef<GridType['lastAddition']>(grid.lastAddition)
-
 
   useEffect(() => {
     if (grid.lastAddition?.id && grid.lastAddition.id !== lastAdditionRef.current?.id) {
@@ -22,19 +21,20 @@ const useUpdateScore = (grid: GridType) => {
         setScore((score) => score + (grid.lastAddition?.sum ?? 0))
       }
     }
-  }, [grid])
+  }, [grid, setScore])
 }
 
-const Grid = () => {
-  const [grid, setGrid] = useState<GridType>({ cells: CLEAN_GRID, lastAddition: undefined });
+const Grid = () => {  
+  const { score } = useScore();
+  const { grid } = useGrid();
   useUpdateScore(grid)
 
   useEffect(() => {
-    setGrid(addNewTile(grid));
-  }, [])
+    window.localStorage.setItem('savegame', JSON.stringify({ ...grid, score }))
+  }, [grid, score])
 
-  useHandleKeyPress(setGrid)
-  const swipeHandlers = useHandleSwipe(setGrid)
+  useHandleKeyPress()
+  const swipeHandlers = useHandleSwipe()
   
   return (
     <div className="grid" {...swipeHandlers}>

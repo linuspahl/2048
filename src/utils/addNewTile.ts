@@ -5,12 +5,12 @@ const getRandomPosition = (min = 1, max = GRID_SIZE) => {
   return Math.floor(Math.random() * (max + 1 - min) + min)
 }
 
-const getNewTilePosition = (grid: GridType) => {
+const getNewTilePosition = (cells: GridType['cells']) => {
   let row = getRandomPosition();
   let column = getRandomPosition();
 
   while (
-    grid.cells[row - 1][column - 1] !== 0
+    cells[row - 1][column - 1] !== 0
   ) {
     row = getRandomPosition();
     column = getRandomPosition();
@@ -19,11 +19,11 @@ const getNewTilePosition = (grid: GridType) => {
   return { row, column };
 }
 
-const addNewTile = (grid: GridType): GridType => {
-  const { row, column } = getNewTilePosition(grid);
-  const newCells = [...grid.cells];
+const addNewTile = (cells: GridType['cells']): GridType['cells'] => {
+  const { row, column } = getNewTilePosition(cells);
+  const newCells = [...cells];
   newCells[row - 1][column - 1] = 2;
-  return { ...grid, cells: newCells };
+  return newCells;
 }
 
 export default addNewTile;

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { GridType, MoveDirection } from '../types';
 import moveTiles from '../utils/moveTiles'
+import useGrid from './useGrid';
 
 const KEY_CODE_MAPPING: { [key: number]: MoveDirection } = {
   37: 'left',
@@ -23,7 +24,9 @@ const handleUserKeyPress = (keyCode: number, setGrid: React.Dispatch<React.SetSt
   moveTiles(setGrid, moveDirection);
 }
 
-export const useHandleKeyPress = (setGrid: React.Dispatch<React.SetStateAction<GridType>>) => {
+export const useHandleKeyPress = () => {
+  const { setGrid } = useGrid();
+
   React.useEffect(() => {
     const onKeyPress = (event: Event) => {
       if (isKeyboardEvent(event)) {
