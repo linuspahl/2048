@@ -12,5 +12,9 @@
   min-width: 120px;
   font-weight: bold;
   text-align: center;
+}
 
+.score .title {
+  font-size: 12px;
+  color: #6c6c6c;
 }

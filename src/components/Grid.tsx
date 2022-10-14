@@ -11,7 +11,7 @@ import React from 'react';
 import useGrid from '../hooks/useGrid';
 
 const useUpdateScore = (grid: GridType) => {
-  const { setScore } = useScore();
+  const { setScore, score, highscore, setHighscore } = useScore();
   const lastAdditionRef = React.useRef<GridType['lastAddition']>(grid.lastAddition)
 
   useEffect(() => {
@@ -22,16 +22,23 @@ const useUpdateScore = (grid: GridType) => {
       }
     }
   }, [grid, setScore])
+
+  useEffect(() => {
+    if (score > highscore) {
+      console.log({highscore})
+      setHighscore(score);
+    }
+  }, [score, setHighscore])
 }
 
 const Grid = () => {  
-  const { score } = useScore();
+  const { score, highscore } = useScore();
   const { grid } = useGrid();
   useUpdateScore(grid)
 
   useEffect(() => {
-    window.localStorage.setItem('savegame', JSON.stringify({ ...grid, score }))
-  }, [grid, score])
+    window.localStorage.setItem('savegame', JSON.stringify({ ...grid, score, highscore }))
+  }, [grid, score, highscore])
 
   useHandleKeyPress()
   const swipeHandlers = useHandleSwipe()

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ScoreContext from './ScoreContext';
 
-const Grid = ({ children, initialScore }: { children: React.ReactNode, initialScore: number } ) => {
+const ScoreProvider = ({ children, initialScore, initialHighscore }: { children: React.ReactNode, initialScore: number, initialHighscore: number } ) => {
   const [score, setScore] = useState(initialScore);
+  const [highscore, setHighscore] = useState(initialHighscore || 0);
+  console.log(highscore)
   
   return (
-    <ScoreContext.Provider value={{ score, setScore }}>
+    <ScoreContext.Provider value={{ score, setScore, highscore, setHighscore }}>
       {children}
     </ScoreContext.Provider>
   )
 }
 
-export default Grid;
+export default ScoreProvider;
