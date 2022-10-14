@@ -5,10 +5,29 @@ import Tile from './Tile'
 import { useHandleKeyPress } from '../hooks/useHandleKeyPress';
 import useHandleSwipe from '../hooks/useHandleSwipe';
 import addNewTile from '../utils/addNewTile';
+import useScore from '../hooks/useScore';
+import { GridType } from '../types';
 import './Grid.css'
+import React from 'react';
+
+const useUpdateScore = (grid: GridType) => {
+  const { setScore } = useScore();
+  const lastAdditionRef = React.useRef<GridType['lastAddition']>(grid.lastAddition)
+
+
+  useEffect(() => {
+    if (grid.lastAddition?.id && grid.lastAddition.id !== lastAdditionRef.current?.id) {
+      lastAdditionRef.current = grid.lastAddition;
+      if (grid.lastAddition?.sum) {
+        setScore((score) => score + (grid.lastAddition?.sum ?? 0))
+      }
+    }
+  }, [grid])
+}
 
 const Grid = () => {
-  const [grid, setGrid] = useState(CLEAN_GRID);
+  const [grid, setGrid] = useState<GridType>({ cells: CLEAN_GRID, lastAddition: undefined });
+  useUpdateScore(grid)
 
   useEffect(() => {
     setGrid(addNewTile(grid));
@@ -19,7 +38,7 @@ const Grid = () => {
   
   return (
     <div className="grid" {...swipeHandlers}>
-      {grid.map((row, rowIndex) => {
+      {grid.cells.map((row, rowIndex) => {
         return row.map((value, colIndex) => <Tile value={value} key={`${rowIndex}-${colIndex}`} />)
       })}
     </div>

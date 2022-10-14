@@ -1,0 +1,16 @@
+.score-container {
+  display: flex;
+
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 18px;
+  padding: 10px 20px;
+  background: #cccccc;
+  min-width: 120px;
+  font-weight: bold;
+  text-align: center;
+
+}

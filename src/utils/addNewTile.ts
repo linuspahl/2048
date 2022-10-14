@@ -10,7 +10,7 @@ const getNewTilePosition = (grid: GridType) => {
   let column = getRandomPosition();
 
   while (
-    grid[row - 1][column - 1] !== 0
+    grid.cells[row - 1][column - 1] !== 0
   ) {
     row = getRandomPosition();
     column = getRandomPosition();
@@ -19,11 +19,11 @@ const getNewTilePosition = (grid: GridType) => {
   return { row, column };
 }
 
-const addNewTile = (grid: GridType) => {
+const addNewTile = (grid: GridType): GridType => {
   const { row, column } = getNewTilePosition(grid);
-  const newGrid = [...grid];
-  newGrid[row - 1][column - 1] = 2;
-  return newGrid;
+  const newCells = [...grid.cells];
+  newCells[row - 1][column - 1] = 2;
+  return { ...grid, cells: newCells };
 }
 
 export default addNewTile;
