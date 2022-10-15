@@ -4,7 +4,6 @@ import ScoreContext from './ScoreContext';
 const ScoreProvider = ({ children, initialScore, initialHighscore }: { children: React.ReactNode, initialScore: number, initialHighscore: number } ) => {
   const [score, setScore] = useState(initialScore);
   const [highscore, setHighscore] = useState(initialHighscore || 0);
-  console.log(highscore)
   
   return (
     <ScoreContext.Provider value={{ score, setScore, highscore, setHighscore }}>

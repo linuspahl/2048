@@ -25,16 +25,16 @@ const useUpdateScore = (grid: GridType) => {
 
   useEffect(() => {
     if (score > highscore) {
-      console.log({highscore})
       setHighscore(score);
     }
-  }, [score, setHighscore])
+  }, [score, highscore, setHighscore])
 }
 
 const Grid = () => {  
   const { score, highscore } = useScore();
   const { grid } = useGrid();
-  useUpdateScore(grid)
+  useUpdateScore(grid);
+  
 
   useEffect(() => {
     window.localStorage.setItem('savegame', JSON.stringify({ ...grid, score, highscore }))

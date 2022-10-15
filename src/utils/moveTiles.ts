@@ -68,17 +68,17 @@ const mergeToLeft = (grid: GridType) => {
 }
 
 const flipMatrix = (matrix: GridType['cells']) => (
-  matrix[0].map((column, index) => (
-    matrix.map(row => row[index])
+  [...matrix][0].map((column, index) => (
+    [...matrix].map(row => row[index])
   ))
 );
 
-const rotateMatrix = (matrix: GridType['cells']) => (
-  flipMatrix(matrix.reverse())
+export const rotateMatrix = (matrix: GridType['cells']) => (
+  flipMatrix([...matrix].reverse())
 );
 
 const rotateMatrixCounterClockwise = (matrix: GridType['cells']) => (
-  flipMatrix(matrix).reverse()
+  flipMatrix([...matrix]).reverse()
 );
 
 const MOVE_MAPPING: { [key: string]: (grid: GridType) => GridType } = {
